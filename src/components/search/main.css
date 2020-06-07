@@ -1,0 +1,117 @@
+.main__wrapper {
+    display: flex;
+    margin-top: 50px;
+}
+
+.search__container {
+    width: 50%;
+    height: 100%;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.search__form {
+    display: flex;
+}
+.history__container {
+    padding: 30px;
+}
+
+.input {
+    position: relative;
+    width: 200px;
+}
+.search__input {
+    width: 200px;
+    height: 30px;
+    padding: 0px 20px;
+    border: none;
+    background: transparent;
+    outline: none;
+}
+.input__border {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: #B00020;
+    transition: all .5s;
+    border-radius: 20px;
+}
+.search__input:focus ~ .input__border {
+    background: #6200EE;
+}
+.search__btn {
+    margin-left: 50px;
+    font-size: 12px;
+    width: 70px;
+    height: 30px;
+    border: none;
+    color: #212121;
+    border: 2px solid;
+    background: #ffffff;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.4s;
+    font-weight: 700;
+    position: relative;
+}
+
+.search__btn:before,
+.search__btn:after {
+    content: "";
+    position: absolute;
+    width: 15px;
+    height: 2px;
+    background: #ffffff;
+    transform: skew(50deg);
+    transition: 0.4s;
+}
+.search__btn:before {
+    top: -2px;
+    left: 10%;
+}
+.search__btn:after {
+    bottom: -2px;
+    right: 10%;
+}
+
+.search__autocomplete {
+    border: 1px solid #212121;
+    display: flex;
+    flex-direction: column;
+}
+
+.search__item-link {
+    color: #212121;
+    list-style-type: none;
+    text-transform: uppercase;
+    padding: 5px 20px;
+    text-decoration: none;
+    cursor: pointer;
+}
+.search__item-link:hover {
+    background: rgba(0, 0, 0, .2);
+}
+.search__result {
+    margin-top: 50px;
+    box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+    padding: 30px;
+}
+
+.result__item {
+    list-style-type: none;
+    text-transform: uppercase;
+    padding: 10px;
+    line-height: 20px;
+    transition: all .2s;
+}
+.result__item:hover {
+    background: #ccc;
+    cursor: pointer;
+}
+.item-inside {
+    margin-right: 20px;
+}
