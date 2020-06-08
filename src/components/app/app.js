@@ -12,7 +12,7 @@ const App = () => {
         <Fragment>
             <Header />
             <Route path="/" exact component={MainPage} />
-            <Route path="/profile" component={ProfilePage} />
+            <Route path="/profile/:id" component={ProfilePage} />
         </Fragment>
     )
 }

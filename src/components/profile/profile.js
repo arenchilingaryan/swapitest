@@ -1,10 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
+import { NavLink, useParams } from 'react-router-dom'
+import axios from 'axios'
 import './profile.css'
-import { NavLink } from 'react-router-dom'
+import { setProfile } from '../../reducer/profile-reducer'
 
 const ProfilePage = (props) => {
     const { name, height, mass, hair_color, eye_color, birth_year, gender } = props.profile
+    const { id } = useParams()
+    
+
+    useEffect(() => {
+        axios.get(`http://swapi.dev/api/people/${id}/`).then(res => props.setProfile(res.data))
+    }, [])
+
     return (
         <div className="profile__page">
             <NavLink className="profile__btn" to="/">
@@ -31,5 +40,10 @@ function mapStateToProps(state) {
         profile: state.profile.profile
     }
 }
+function mapDispatchToProps(dispatch) {
+    return {
+        setProfile: (profileData) => dispatch(setProfile(profileData))
+    }
+}
 
-export default connect(mapStateToProps)(ProfilePage)
+export default connect(mapStateToProps, mapDispatchToProps)(ProfilePage)

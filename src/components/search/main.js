@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { addHistory } from '../../reducer/history-reducer'
+import React, { useState, useEffect } from 'react'
+import { addHistory, setHistory } from '../../reducer/history-reducer'
 import { setProfile } from '../../reducer/profile-reducer'
 import { addResult, addSearch } from '../../reducer/search-reducer'
 import { connect } from 'react-redux'
@@ -11,43 +11,43 @@ const MainPage = props => {
     const [search, setSearch] = useState('')
     const history = useHistory()
 
+    useEffect(() => {
+        const historyArr = localStorage.getItem('history')
+        if (historyArr) {
+            props.setHistory(JSON.parse(historyArr))
+        }
+    }, [])
+
+    useEffect(() => {
+        axios.get(`https://swapi.dev/api/people/?search=${search}`).then(data => props.addSearch(data.data.results))
+    }, [search])
+
+    useEffect(() => {
+        localStorage.setItem('history', JSON.stringify(props.history))
+    }, [props.history])
+
     const searchHandler = async (e) => {
         setSearch(e.target.value)
-        try {
-            const data = await axios.get(`https://swapi.dev/api/people/?search=${search}`)
-            props.addSearch(data.data.results)
-        } catch (e) {
-            throw new Error(e)
-        }
     }
 
     const setProfileHandler = async (characterUrl) => {
-        const d = new Date()
-        const curr_date = d.getDate()
-        let curr_month = d.getMonth() + 1
-        if (curr_month <= 10) {
-            curr_month = `0${d.getMonth() + 1}`
-        }
-        const curr_year = d.getFullYear()
-        const date = curr_year + "-" + curr_month + "-" + curr_date
-
         try {
             const data = await axios.get(characterUrl)
-            props.setProfile(data.data)
-            props.addHistory({name: data.data.name, date: date})
+            props.addHistory(data.data.name)
             setSearch('')
-            history.push('/profile')
+            const middlewareId = characterUrl.substring(28)
+            const idx = middlewareId.substring(0, middlewareId.length - 1)
+            history.push(`/profile/${idx}`)
         } catch (e) {
             throw new Error(e)
         }
     }
 
-    const submitHandler = async(e) => {
+    const submitHandler = async (e) => {
         e.preventDefault()
         try {
             const data = await axios.get(`https://swapi.dev/api/people/?search=${search}`)
             props.addResultSearch(data.data.results)
-            console.log(data.data.results)
             setSearch('')
         } catch (e) {
             throw new Error(e)
@@ -62,7 +62,7 @@ const MainPage = props => {
                     <div className="input">
                         <input onChange={searchHandler} value={search} className="search__input" type="text" placeholder="search..." name="search" autoComplete="off" />
                         <span className="input__border"></span>
-                        <ul className="search__autocomplete" style={ search ? {display: 'block'} : {display: 'none'}  }>
+                        <ul className="search__autocomplete" style={search ? { display: 'block' } : { display: 'none' }}>
                             {
                                 props.search.search.map(el => {
                                     return (
@@ -77,7 +77,7 @@ const MainPage = props => {
                     </div>
                     <button className="search__btn">Search</button>
                 </form>
-                <ul className="search__result" style={props.search.result.length ? {display: 'block'} : {display: 'none'}}>
+                <ul className="search__result" style={props.search.result.length ? { display: 'block' } : { display: 'none' }}>
                     {
                         props.search.result.map(el => {
                             const idx = props.search.result.indexOf(el)
@@ -94,15 +94,16 @@ const MainPage = props => {
                 </ul>
             </div>
             <div className="history__container">
-                    {
-                        props.history.length
+                {
+                    props.history.length
                         ? props.history.map(el => {
+                            const idx = props.history.indexOf(el)
                             return (
-                                <p key={el.date}> {el.name} &nbsp;:&nbsp; {el.date} </p>
+                                <p key={idx}> {el} </p>
                             )
                         })
                         : <h2>History is empty</h2>
-                    }
+                }
             </div>
         </div>
     )
@@ -118,6 +119,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         addHistory: (character) => dispatch(addHistory(character)),
+        setHistory: (arr) => dispatch(setHistory(arr)),
         setProfile: (profileData) => dispatch(setProfile(profileData)),
         addResultSearch: (result) => dispatch(addResult(result)),
         addSearch: (search) => dispatch(addSearch(search))
